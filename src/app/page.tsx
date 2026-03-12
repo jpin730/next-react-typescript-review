@@ -1,65 +1,82 @@
-import Image from 'next/image'
+'use client'
 
-export default function Home() {
+import { useState } from 'react'
+
+import { Button } from './components/Button'
+import { Link } from './components/Link'
+import { log } from './utils/log'
+
+interface User {
+  id: number
+  name: string
+  email: string
+  password: string
+}
+
+type UserWithoutPassword = Omit<User, 'password'>
+
+type UpdateUser = Partial<UserWithoutPassword>
+
+type UserProfile = Pick<UpdateUser, 'name' | 'email'>
+
+type Status = 'active' | 'inactive' | 'pending' | 'suspended'
+
+type AllowedStatus = Exclude<Status, 'suspended' | 'pending' | 'inactive'>
+
+interface ApiResponse<T> {
+  data: T
+  message: string
+}
+
+const Page = () => {
+  const [user, setUser] = useState<UserProfile | null>(null)
+
+  setTimeout(() => {
+    const response: ApiResponse<UserProfile> = {
+      data: {
+        name: 'John Doe',
+        email: 'john.doe@example.com',
+      },
+      message: 'User profile fetched successfully',
+    }
+    setUser(response.data)
+    log('User profile already set!')
+  }, 2000)
+
+  const status: AllowedStatus = 'active'
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between bg-white px-16 py-32 sm:items-start dark:bg-black">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="flex h-dvh w-dvw">
+      <span className="m-auto flex max-w-full shrink-0 flex-wrap items-center justify-center gap-2">
+        <Button
+          text={'Click me!'}
+          backgroundColor="blue"
+          style={{ textDecoration: 'underline' }}
+          onClick={() => alert('Button clicked!')}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl leading-10 font-semibold tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{' '}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{' '}
-            or the{' '}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{' '}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="bg-foreground text-background flex h-12 w-full items-center justify-center gap-2 rounded-full px-5 transition-colors hover:bg-[#383838] md:w-39.5 dark:hover:bg-[#ccc]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/8 px-5 transition-colors hover:border-transparent hover:bg-black/4 md:w-39.5 dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+
+        <Button onClick={() => alert('Another button clicked!')}>
+          <span className="me-2 text-lg font-semibold">Another Button</span>
+          <span className="inline-block h-2 w-2 animate-ping rounded-full bg-white"></span>
+        </Button>
+
+        <Link href="https://www.google.com" target="_blank" rel="noopener noreferrer">
+          Primary Link
+        </Link>
+
+        <Link
+          href="https://www.example.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          variant="secondary"
+        >
+          Secondary Link
+        </Link>
+        <p>{user ? `User: ${user.name} (${user.email})` : 'Loading user...'}</p>
+        <p>Status: {status.toUpperCase()}</p>
+      </span>
     </div>
   )
 }
+
+export default Page
